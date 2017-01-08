@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -11,6 +12,7 @@ namespace XFSNet
     {
         private static Regex regVersion = new Regex(@"^\d+\.\d+$");
         public static readonly int IntPtrSize = 0;
+        public static ConcurrentDictionary<RuntimeTypeHandle, int> marshalSizeCache = new ConcurrentDictionary<RuntimeTypeHandle, int>();
         static XFSUtil()
         {
             IntPtrSize = Marshal.SizeOf(typeof(IntPtr));
@@ -49,6 +51,18 @@ namespace XFSNet
                 }
             }
             return new T[0];
+        }
+
+        public static int GetMarshalSize(Type t)
+        {
+            RuntimeTypeHandle ptr = t.TypeHandle;
+            int size = 0;
+            if(!marshalSizeCache.TryGetValue(ptr,out size))
+            {
+                size = Marshal.SizeOf(t);
+                marshalSizeCache.TryAdd(ptr, size);
+            }
+            return size;
         }
     }
 }

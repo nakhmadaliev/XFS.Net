@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -83,14 +84,16 @@ namespace XFSNet
         }
         protected virtual int InnerGetInfo<T>(int category, T inParam)
         {
-            
-            //XfsApi.WFSGetInfo(hService, category,)
+            int size = XFSUtil.GetMarshalSize(typeof(T));
+            IntPtr ptr= Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(inParam, ptr, false);
+
             return 0;
         }
-        protected virtual int InnerGetInfo<T>(int category)
+        protected virtual int InnerGetInfo<T>(int category, IntPtr inParam)
         {
             IntPtr pOutParam = IntPtr.Zero;
-            //XfsApi.WFSGetInfo(hService, category, IntPtr.Zero, TimeOut, ref pOutParam);
+            XfsApi.WFSGetInfo(hService, category, inParam, TimeOut, ref pOutParam);
             return 0;
         }
         protected void InnerRegister(int eventClasses)

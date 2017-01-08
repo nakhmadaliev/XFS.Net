@@ -22,14 +22,15 @@ namespace TestForm
         private SIU siu = new SIU();
         public Form1()
         {
-           int p= XFSUtil.ParseVersionString("3.16", "3.20");
-            string s = p.ToString("X");
+           int p= XFSUtil.ParseVersionString("3.10", "3.20");
+            string s = p.ToString("X8");
             InitializeComponent();
             Controls.Add(device);
             device.RegisterComplete += Device_RegisterComplete;
             device.RegisterError += Device_RegisterError;
             device.OpenError += Device_OpenError;
             //device.Open("IDCARDUNIT1");
+            cdm.Open("CURRENCYDISPENSER1");
             pin.PINKey += Pin_PINKey;
            // pin.Open("PINPAD1");
             cdm.DispenComplete += Cdm_DispenComplete;
