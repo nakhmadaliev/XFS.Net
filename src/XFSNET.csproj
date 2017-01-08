@@ -73,8 +73,8 @@
     <Compile Include="IDC\IDC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="IDC\IDCCardData.cs" />
     <Compile Include="IDC\IDCDefinition.cs" />
+    <Compile Include="IDC\OutItems.cs" />
     <Compile Include="PIN\PIN.cs">
       <SubType>UserControl</SubType>
     </Compile>

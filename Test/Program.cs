@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Test
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             //ToSturct();
@@ -58,7 +60,7 @@ namespace Test
             StringBuilder buf = new StringBuilder(128);
             foreach (Match item in mc)
             {
-                buf.AppendLine(string.Format("public const int {0}={1};",item.Groups[1].Value,item.Groups[2].Value));
+                buf.AppendLine(string.Format("public const int {0}={1};", item.Groups[1].Value, item.Groups[2].Value));
             }
             string s = buf.ToString();
             Console.WriteLine(s);
@@ -66,12 +68,11 @@ namespace Test
 
         public static void ToEnum()
         {
-            string str = @"#define     WFS_SIU_OFF                         (0x0001)
-#define     WFS_SIU_ON                          (0x0002)
-#define     WFS_SIU_SLOW_FLASH                  (0x0004)
-#define     WFS_SIU_MEDIUM_FLASH                (0x0008)
-#define     WFS_SIU_QUICK_FLASH                 (0x0010)
-#define     WFS_SIU_CONTINUOUS                  (0x0080)";
+            string str = @"#define     WFS_IDC_AFMNOTSUPP                  (0)
+#define     WFS_IDC_AFMOK                       (1)
+#define     WFS_IDC_AFMINOP                     (2)
+#define     WFS_IDC_AFMDEVICEDETECTED           (3)
+#define     WFS_IDC_AFMUNKNOWN                  (4)";
             Regex reg = new Regex(@"#define\s*?(\S+)\s*?\(?(\s*\-?\s*[\dxX]+)\)?");
             MatchCollection mc = reg.Matches(str);
             StringBuilder buf = new StringBuilder(128);
@@ -81,6 +82,7 @@ namespace Test
             }
             buf.Length -= 3;
             string s = buf.ToString();
+            Clipboard.SetText(s);
             Console.WriteLine(s);
         }
 
@@ -270,12 +272,12 @@ typedef struct _wfs_idc_track_detected
             foreach (Match item in mc)
             {
                 buf.AppendLine("[StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]");
-                buf.AppendLine("public struct "+item.Groups[2].Value+"{");
+                buf.AppendLine("public struct " + item.Groups[2].Value + "{");
                 MatchCollection mcFields = regInner.Matches(item.Groups[1].Value);
                 foreach (Match itemField in mcFields)
                 {
                     string strType = itemField.Groups[1].Value.ToLower();
-                    switch(strType)
+                    switch (strType)
                     {
                         case "lpstr":
                             strType = "string";
@@ -302,7 +304,7 @@ typedef struct _wfs_idc_track_detected
                     buf.Append("public ");
                     buf.Append(strType);
                     buf.Append(' ');
-                    buf.AppendLine(itemField.Groups[2].Value+";");
+                    buf.AppendLine(itemField.Groups[2].Value + ";");
                 }
                 buf.AppendLine("}");
             }

@@ -9,7 +9,7 @@ namespace XFSNet
 {
     public class XFSUtil
     {
-        private static Regex regVersion = new Regex(@"^\d\.\d$");
+        private static Regex regVersion = new Regex(@"^\d+\.\d+$");
         public static readonly int IntPtrSize = 0;
         static XFSUtil()
         {
@@ -23,9 +23,11 @@ namespace XFSNet
         {
             if (regVersion.IsMatch(lowVersion) && regVersion.IsMatch(hightVersion))
             {
-                int low = (lowVersion[0] - '0') | ((lowVersion[2] - '0') >> 8);
-                int high = (hightVersion[0] - '0') | ((hightVersion[2] - '0') >> 8);
-                return high | (low >> 16);
+                string[] ssLow = lowVersion.Split('.');
+                string[] ssHigh = hightVersion.Split('.');
+                int low = int.Parse(ssLow[0]) | (int.Parse(ssLow[1]) << 8);
+                int high = int.Parse(ssHigh[0]) | (int.Parse(ssHigh[1]) << 8);
+                return high | (low << 16);
             }
             return -1;
         }

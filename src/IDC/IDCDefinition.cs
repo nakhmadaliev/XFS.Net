@@ -146,27 +146,63 @@ namespace XFSNet.IDC
         WFS_IDC_HICO = 0x0004,
         WFS_IDC_AUTO = 0x0008
     }
+    public enum IDCChipModule : ushort
+    {
+        WFS_IDC_CHIPMODOK = 1,
+        WFS_IDC_CHIPMODINOP = 2,
+        WFS_IDC_CHIPMODUNKNOWN = 3,
+        WFS_IDC_CHIPMODNOTSUPP = 4
+    }
+    public enum IDCMagModule : ushort
+    {
+        WFS_IDC_MAGMODOK = 1,
+        WFS_IDC_MAGMODINOP = 2,
+        WFS_IDC_MAGMODUNKNOWN = 3,
+        WFS_IDC_MAGMODNOTSUPP = 4
+    }
+    public enum IDCImageModule : ushort
+    {
+        WFS_IDC_IMGMODOK = 1,
+        WFS_IDC_IMGMODINOP = 2,
+        WFS_IDC_IMGMODUNKNOWN = 3,
+        WFS_IDC_IMGMODNOTSUPP = 4
+    }
+    public enum IDCDevicePosition : ushort
+    {
+        WFS_IDC_DEVICEINPOSITION = 0,
+        WFS_IDC_DEVICENOTINPOSITION = 1,
+        WFS_IDC_DEVICEPOSUNKNOWN = 2,
+        WFS_IDC_DEVICEPOSNOTSUPP = 3
+    }
+    public enum IDCAntiFraudModule : ushort
+    {
+        WFS_IDC_AFMNOTSUPP = 0,
+        WFS_IDC_AFMOK = 1,
+        WFS_IDC_AFMINOP = 2,
+        WFS_IDC_AFMDEVICEDETECTED = 3,
+        WFS_IDC_AFMUNKNOWN = 4
+    }
     [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
     public unsafe struct WFSIDCSTATUS
     {
-        DEVSTATUS fwDevice;
-        IDCMediaStatus fwMedia;
-        IDCRetainBinStatus fwRetainBin;
-        IDCSecurityStatus fwSecurity;
-        ushort usCards;
-        IDCChipPowerStatus fwChipPower;
-        IntPtr lpszExtra;
+        public DEVSTATUS fwDevice;
+        public IDCMediaStatus fwMedia;
+        public IDCRetainBinStatus fwRetainBin;
+        public IDCSecurityStatus fwSecurity;
+        public ushort usCards;
+        public IDCChipPowerStatus fwChipPower;
+        public IntPtr lpszExtra;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = IDCDefinition.WFS_IDC_GUIDLIGHTS_SIZE)]
-        IDCGuidLightStatus[] dwGuidLights;
-        ushort fwChipModule;
-        ushort fwMagReadModule;
-        ushort fwMagWriteModule;
-        ushort fwFrontImageModule;
-        ushort fwBackImageModule;
-        ushort wDevicePosition;
-        ushort usPowerSaveRecoveryTime;
-        ushort* lpwParkingStationMedia;
-        ushort wAntiFraudModule;
+        public IDCGuidLightStatus[] dwGuidLights;
+        public IDCChipModule fwChipModule;
+        public IDCMagModule fwMagReadModule;
+        public IDCMagModule fwMagWriteModule;
+        public IDCImageModule fwFrontImageModule;
+        public IDCImageModule fwBackImageModule;
+        public IDCDevicePosition wDevicePosition;
+        public ushort usPowerSaveRecoveryTime;
+        public ushort* lpwParkingStationMedia;
+        public IDCAntiFraudModule wAntiFraudModule;
     }
     [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
     public unsafe struct WFSIDCCAPS
@@ -315,5 +351,4 @@ namespace XFSNet.IDC
     {
         ushort fwTracks;
     }
-
 }

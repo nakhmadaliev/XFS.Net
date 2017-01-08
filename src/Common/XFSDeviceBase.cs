@@ -18,6 +18,7 @@ namespace XFSNet
         protected bool autoRegister = false;
         protected int requestID = 0;
         protected bool isStartup = false;
+        public int TimeOut { get; set; }
         /// <summary>
         /// dulication of handle for crossing thread
         /// </summary>
@@ -80,7 +81,18 @@ namespace XFSNet
                 InnerRegister(GetEventClass());
             }
         }
-
+        protected virtual int InnerGetInfo<T>(int category, T inParam)
+        {
+            
+            //XfsApi.WFSGetInfo(hService, category,)
+            return 0;
+        }
+        protected virtual int InnerGetInfo<T>(int category)
+        {
+            IntPtr pOutParam = IntPtr.Zero;
+            //XfsApi.WFSGetInfo(hService, category, IntPtr.Zero, TimeOut, ref pOutParam);
+            return 0;
+        }
         protected void InnerRegister(int eventClasses)
         {
             int hResult = XfsApi.WFSAsyncRegister(hService, eventClasses, MessageHandle
