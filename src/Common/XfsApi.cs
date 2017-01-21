@@ -38,11 +38,14 @@ namespace XFSNet
         public static extern int WFSExecute(ushort hService, int dwCommand, IntPtr lpCmdData, int dwTimeOut, ref IntPtr lppResult);
 
         [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]
-        public static extern int WFSAsyncExecute(ushort hService, int dwCommand, IntPtr lpCmdData, int dwTimeOut, IntPtr hWnd, 
+        public static extern int WFSAsyncExecute(ushort hService, int dwCommand, IntPtr lpCmdData, int dwTimeOut, IntPtr hWnd,
             ref int lpRequestID);
 
         [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]
         public static extern int WFSFreeResult(ref WFSRESULT lpResult);
+
+        [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]
+        public static extern int WFSFreeResult(IntPtr ptr);
 
         [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]
         public static extern int WFSGetInfo(ushort hService, int dwCategory, IntPtr lpQueryDetails, int dwTimeOut, ref IntPtr lppResult);
@@ -60,12 +63,12 @@ namespace XFSNet
         public static extern int WFSAsyncLock(ushort hService, int dwTimeOut, IntPtr hWnd, ref int lpRequestID);
 
         [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]
-        public static extern int WFSOpen(string lpszLogicalName, IntPtr hApp, string lpszAppID, int dwTraceLevel, int dwTimeOut, 
+        public static extern int WFSOpen(string lpszLogicalName, IntPtr hApp, string lpszAppID, int dwTraceLevel, int dwTimeOut,
             int dwSrvcVersionsRequired, ref WFSVERSION lpSrvcVersion, ref WFSVERSION lpSPIVersion, ref ushort lphService);
 
         [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]
-        public static extern int WFSAsyncOpen(string lpszLogicalName, IntPtr hApp, string lpszAppID, int dwTraceLevel, int dwTimeOut, 
-            ref ushort lphService, IntPtr hWnd, int dwSrvcVersionsRequired, ref WFSVERSION lpSrvcVersion, ref WFSVERSION lpSPIVersion, 
+        public static extern int WFSAsyncOpen(string lpszLogicalName, IntPtr hApp, string lpszAppID, int dwTraceLevel, int dwTimeOut,
+            ref ushort lphService, IntPtr hWnd, int dwSrvcVersionsRequired, ref WFSVERSION lpSrvcVersion, ref WFSVERSION lpSPIVersion,
             ref int lpRequestID);
 
         [DllImport(XFSConstants.LIBNAME, CharSet = XFSConstants.CHARSET, CallingConvention = XFSConstants.CALLINGCONVENTION)]

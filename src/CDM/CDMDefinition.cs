@@ -72,7 +72,7 @@ namespace XFSNet.CDM
 
     }
     [Flags]
-    public enum OutputPosition:ushort
+    public enum OutputPosition : ushort
     {
         WFS_CDM_POSNULL = 0x0000,
         WFS_CDM_POSLEFT = 0x0001,
@@ -82,6 +82,36 @@ namespace XFSNet.CDM
         WFS_CDM_POSBOTTOM = 0x0080,
         WFS_CDM_POSFRONT = 0x0800,
         WFS_CDM_POSREAR = 0x1000
+    }
+    public enum CDMSafeDoor : ushort
+    {
+        WFS_CDM_DOORNOTSUPPORTED = (1),
+        WFS_CDM_DOOROPEN = (2),
+        WFS_CDM_DOORCLOSED = (3),
+        WFS_CDM_DOORUNKNOWN = (5)
+    }
+    public enum CDMDispenser : ushort
+    {
+        WFS_CDM_DISPOK = (0),
+        WFS_CDM_DISPCUSTATE = (1),
+        WFS_CDM_DISPCUSTOP = (2),
+        WFS_CDM_DISPCUUNKNOWN = (3)
+    }
+    public enum CDMIntermediateStacker : ushort
+    {
+        WFS_CDM_ISEMPTY = 0,
+        WFS_CDM_ISNOTEMPTY = 1,
+        WFS_CDM_ISNOTEMPTYCUST = 2,
+        WFS_CDM_ISNOTEMPTYUNK = 3,
+        WFS_CDM_ISUNKNOWN = 4,
+        WFS_CDM_ISNOTSUPPORTED = 5
+    }
+    public enum CDMPositionStatus:ushort
+    {
+        WFS_CDM_DEVICEINPOSITION = 0,
+        WFS_CDM_DEVICENOTINPOSITION = 1,
+        WFS_CDM_DEVICEPOSUNKNOWN = 2,
+        WFS_CDM_DEVICEPOSNOTSUPP = 3
     }
     [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
     public struct WFSCDMDENOMINATION
@@ -102,4 +132,258 @@ namespace XFSNet.CDM
         public bool bPresent;
         public IntPtr lpDenomination;
     }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMOUTPOS
+    {
+        public ushort fwPosition;
+        public ushort fwShutter;
+        public ushort fwPositionStatus;
+        public ushort fwTransport;
+        public ushort fwTransportStatus;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMSTATUS
+    {
+        public DEVSTATUS fwDevice;
+        public CDMSafeDoor fwSafeDoor;
+        public CDMDispenser fwDispenser;
+        public CDMIntermediateStacker fwIntermediateStacker;
+        public string lpszExtra;
+        public CDMPositionStatus wDevicePosition;
+        public ushort usPowerSaveRecoveryTime;
+        public AntiFraudModule wAntiFraudModule;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCAPS
+    {
+        public ushort wClass;
+        public ushort fwType;
+        public ushort wMaxDispenseItems;
+        public bool bCompound;
+        public bool bShutter;
+        public bool bShutterControl;
+        public ushort fwRetractAreas;
+        public ushort fwRetractTransportActions;
+        public ushort fwRetractStackerActions;
+        public bool bSafeDoor;
+        public bool bCashBox;
+        public bool bIntermediateStacker;
+        public bool bItemsTakenSensor;
+        public ushort fwPositions;
+        public ushort fwMoveItems;
+        public ushort fwExchangeType;
+        public string lpszExtra;
+        public bool bPowerSaveControl;
+        public bool bPrepareDispense;
+        public bool bAntiFraudModule;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMPHCU
+    {
+        public string lpPhysicalPositionName;
+        public uint ulInitialCount;
+        public uint ulCount;
+        public uint ulRejectCount;
+        public uint ulMaximum;
+        public ushort usPStatus;
+        public bool bHardwareSensor;
+        public uint ulDispensedCount;
+        public uint ulPresentedCount;
+        public uint ulRetractedCount;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCASHUNIT
+    {
+        public ushort usNumber;
+        public ushort usType;
+        public string lpszCashUnitName;
+        public uint ulValues;
+        public uint ulInitialCount;
+        public uint ulCount;
+        public uint ulRejectCount;
+        public uint ulMinimum;
+        public uint ulMaximum;
+        public bool bAppLock;
+        public ushort usStatus;
+        public ushort usNumPhysicalCUs;
+        public uint ulDispensedCount;
+        public uint ulPresentedCount;
+        public uint ulRetractedCount;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCUINFO
+    {
+        public ushort usTellerID;
+        public ushort usCount;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMTELLERINFO
+    {
+        public ushort usTellerID;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMTELLERTOTALS
+    {
+        public uint ulItemsReceived;
+        public uint ulItemsDispensed;
+        public uint ulCoinsReceived;
+        public uint ulCoinsDispensed;
+        public uint ulCashBoxReceived;
+        public uint ulCashBoxDispensed;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMTELLERDETAILS
+    {
+        public ushort usTellerID;
+        public uint ulInputPosition;
+        public ushort fwOutputPosition;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCURRENCYEXP
+    {
+        public short sExponent;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMMIXTYPE
+    {
+        public ushort usMixNumber;
+        public ushort usMixType;
+        public ushort usSubType;
+        public string lpszName;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public unsafe struct WFSCDMMIXROW
+    {
+        public uint ulAmount;
+        public ushort* lpusMixture;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public unsafe struct WFSCDMMIXTABLE
+    {
+        public ushort usMixNumber;
+        public string lpszName;
+        public ushort usRows;
+        public ushort usCols;
+        public int* lpulMixHeader;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMPRESENTSTATUS
+    {
+        public IntPtr lpDenomination;
+        public ushort wPresentState;
+        public string lpszExtra;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMDENOMINATE
+    {
+        public ushort usTellerID;
+        public ushort usMixNumber;
+        public IntPtr lpDenomination;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMPHYSICALCU
+    {
+        public bool bEmptyAll;
+        public ushort fwPosition;
+        public string lpPhysicalPositionName;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCOUNTEDPHYSCU
+    {
+        public string lpPhysicalPositionName;
+        public uint ulDispensed;
+        public uint ulCounted;
+        public ushort usPStatus;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCOUNT
+    {
+        public ushort usNumPhysicalCUs;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMRETRACT
+    {
+        public ushort fwOutputPosition;
+        public ushort usRetractArea;
+        public ushort usIndex;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMITEMNUMBER
+    {
+        public uint ulValues;
+        public ushort usRelease;
+        public uint ulCount;
+        public ushort usNumber;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMITEMNUMBERLIST
+    {
+        public ushort usNumOfItemNumbers;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMTELLERUPDATE
+    {
+        public ushort usAction;
+        public IntPtr lpTellerDetails;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public unsafe struct WFSCDMSTARTEX
+    {
+        public ushort fwExchangeType;
+        public ushort usTellerID;
+        public ushort usCount;
+        public ushort* lpusCUNumList;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMITEMPOSITION
+    {
+        public ushort usNumber;
+        public IntPtr lpRetractArea;
+        public ushort fwOutputPosition;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCALIBRATE
+    {
+        public ushort usNumber;
+        public ushort usNumOfBills;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMSETGUIDLIGHT
+    {
+        public ushort wGuidLight;
+        public int dwCommand;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMPOWERSAVECONTROL
+    {
+        public ushort usMaxPowerSaveRecoveryTime;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMPREPAREDISPENSE
+    {
+        public ushort wAction;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMCUERROR
+    {
+        public ushort wFailure;
+        public IntPtr lpCashUnit;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public unsafe struct WFSCDMCOUNTSCHANGED
+    {
+        public ushort usCount;
+        public ushort* lpusCUNumList;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMDEVICEPOSITION
+    {
+        public ushort wPosition;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSCDMPOWERSAVECHANGE
+    {
+        public ushort usPowerSaveRecoveryTime;
+    }
+
 }

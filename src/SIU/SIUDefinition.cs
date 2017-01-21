@@ -66,4 +66,89 @@ namespace XFSNet.SIU
         public ushort wGuidLight;
         public LightControl fwCommand;
     }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUSTATUS
+    {
+        public ushort fwDevice;
+        public string lpszExtra;
+        public ushort usPowerSaveRecoveryTime;
+        public ushort wAntiFraudModule;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUCAPS
+    {
+        public ushort wClass;
+        public ushort fwType;
+        public string lpszExtra;
+        public bool bPowerSaveControl;
+        public ushort fwAutoStartupMode;
+        public bool bAntiFraudModule;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUGETSTARTUPTIME
+    {
+        public ushort wMode;
+        public IntPtr lpStartTime;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUENABLE
+    {
+        public string lpszExtra;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUSETPORTS
+    {
+        public string lpszExtra;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUSETDOOR
+    {
+        public ushort wDoor;
+        public ushort fwCommand;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUSETINDICATOR
+    {
+        public ushort wIndicator;
+        public ushort fwCommand;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUSETAUXILIARY
+    {
+        public ushort wAuxiliary;
+        public ushort fwCommand;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUPOWERSAVECONTROL
+    {
+        public ushort usMaxPowerSaveRecoveryTime;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUSETSTARTUPTIME
+    {
+        public ushort wMode;
+        public IntPtr lpStartTime;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUPORTEVENT
+    {
+        public ushort wPortType;
+        public ushort wPortIndex;
+        public ushort wPortStatus;
+        public string lpszExtra;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUPORTERROR
+    {
+        public ushort wPortType;
+        public ushort wPortIndex;
+        public int PortError;
+        public ushort wPortStatus;
+        public string lpszExtra;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSSIUPOWERSAVECHANGE
+    {
+        public ushort usPowerSaveRecoveryTime;
+    }
 }

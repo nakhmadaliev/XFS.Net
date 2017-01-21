@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace XFSNet
 {
-    public class XFSDeviceBase : UserControl
+    public abstract class XFSDeviceBase<TStatusType, TCapabilityType> : UserControl
     {
         #region Events
         public event Action OpenComplete;
@@ -15,16 +15,41 @@ namespace XFSNet
         public event Action CloseComplete;
         public event Action RegisterComplete;
         public event Action<int> RegisterError;
+        #endregion
+
+        #region Fields
         protected ushort hService;
+        public int HService
+        {
+            get
+            {
+                return hService;
+            }
+        }
+        protected string serviceName;
+        public string ServiceName
+        {
+            get
+            {
+                return serviceName;
+            }
+        }
         protected bool autoRegister = false;
         protected int requestID = 0;
         protected bool isStartup = false;
+        /// <summary>
+        /// timeout of excution
+        /// </summary>
         public int TimeOut { get; set; }
         /// <summary>
         /// dulication of handle for crossing thread
         /// </summary>
         protected IntPtr MessageHandle;
+        protected abstract int StatusCommandCode { get; }
+        protected abstract int CapabilityCommandCode { get; }
+        internal Dictionary<int, XFSMessageHandler> executeCompleteHandlers;
         #endregion
+
         public XFSDeviceBase()
         {
             this.Width = this.Height = 0;
@@ -82,19 +107,23 @@ namespace XFSNet
                 InnerRegister(GetEventClass());
             }
         }
-        protected virtual int InnerGetInfo<T>(int category, T inParam)
-        {
-            int size = XFSUtil.GetMarshalSize(typeof(T));
-            IntPtr ptr= Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(inParam, ptr, false);
 
-            return 0;
-        }
-        protected virtual int InnerGetInfo<T>(int category, IntPtr inParam)
+        protected virtual bool InnerGetInfo<T>(int category, IntPtr inParam, out T value)
         {
             IntPtr pOutParam = IntPtr.Zero;
-            XfsApi.WFSGetInfo(hService, category, inParam, TimeOut, ref pOutParam);
-            return 0;
+            value = default(T);
+            int hResult = XfsApi.WFSGetInfo(hService, category, inParam, TimeOut, ref pOutParam);
+            if (hResult == XFSDefinition.WFS_SUCCESS)
+            {
+                WFSRESULT wfsResult = (WFSRESULT)Marshal.PtrToStructure(pOutParam, typeof(WFSRESULT));
+                if (wfsResult.hResult == XFSDefinition.WFS_SUCCESS)
+                {
+                    value = (T)Marshal.PtrToStructure(wfsResult.lpBuffer, typeof(T));
+                    return true;
+                }
+            }
+            XfsApi.WFSFreeResult(pOutParam);
+            return false;
         }
         protected void InnerRegister(int eventClasses)
         {
@@ -144,6 +173,7 @@ namespace XFSNet
             string appID = "XFS.NET", string lowVersion = "3.0",
             string highVersion = "3.0")
         {
+            serviceName = logicName;
             autoRegister = paramAutoRegister;
             int requestVersion = XFSUtil.ParseVersionString(lowVersion,
                 highVersion);
@@ -175,7 +205,14 @@ namespace XFSNet
         {
             InnerRegister(eventClasses);
         }
-
+        public bool GetStatus(out TStatusType value)
+        {
+            return InnerGetInfo(StatusCommandCode, IntPtr.Zero, out value);
+        }
+        public bool GetCapability(out TCapabilityType value)
+        {
+            return InnerGetInfo(CapabilityCommandCode, IntPtr.Zero, out value);
+        }
         public void Close()
         {
             //
@@ -188,6 +225,28 @@ namespace XFSNet
         public void Cancel()
         {
             XfsApi.WFSCancelAsyncRequest(hService, requestID);
+        }
+        protected void HandleExecutionResult(int hResult, Action completeHandler, Action<string, int, string> errorHandler)
+        {
+            if (hResult == XFSDefinition.WFS_SUCCESS)
+                completeHandler();
+            else
+                errorHandler(serviceName, hResult, hResult.ToString());
+        }
+        protected void HandleAysncExcutionResult(int hResult, Action<string, int, string> errorHandler)
+        {
+            if (hResult != XFSDefinition.WFS_SUCCESS)
+                OnExecuteError(errorHandler, hResult);
+        }
+        protected void ExecuteCommand(int commandCode, IntPtr ptrParam, Action<string, int, string> errorHandler = null)
+        {
+            int hResult = XfsApi.WFSAsyncExecute(hService, commandCode, ptrParam, TimeOut, MessageHandle, ref requestID);
+            HandleAysncExcutionResult(hResult, errorHandler);
+        }
+        protected virtual void OnExecuteError(Action<string, int, string> errorHandler, int code)
+        {
+            if (errorHandler != null)
+                errorHandler(ServiceName, code, code.ToString());
         }
     }
 }

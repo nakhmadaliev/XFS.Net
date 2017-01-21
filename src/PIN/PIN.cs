@@ -7,7 +7,7 @@ using XFSNet;
 
 namespace XFSNet.PIN
 {
-    public unsafe class PIN : XFSDeviceBase
+    public unsafe class PIN : XFSDeviceBase<WFSPINSTATUS, WFSPINCAPS>
     {
         public event Action<int> GetDataError;
         public event Action<string> PINKey;
@@ -31,7 +31,7 @@ namespace XFSNet.PIN
         }
         protected override void OnExecuteComplete(ref WFSRESULT result)
         {
-            switch(result.dwCommandCodeOrEventID)
+            switch (result.dwCommandCodeOrEventID)
             {
                 case PINDefinition.WFS_CMD_PIN_GET_DATA:
                     if (result.hResult != XFSDefinition.WFS_SUCCESS)
@@ -60,5 +60,21 @@ namespace XFSNet.PIN
             if (PINKey != null)
                 PINKey(key.ulDigit.ToString().Substring(11));
         }
+        #region Virtual
+        protected override int StatusCommandCode
+        {
+            get
+            {
+                return PINDefinition.WFS_INF_PIN_STATUS;
+            }
+        }
+        protected override int CapabilityCommandCode
+        {
+            get
+            {
+                return PINDefinition.WFS_INF_PIN_CAPABILITIES;
+            }
+        }
+        #endregion
     }
 }

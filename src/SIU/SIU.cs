@@ -6,7 +6,7 @@ using System.Text;
 
 namespace XFSNet.SIU
 {
-    public class SIU : XFSDeviceBase
+    public class SIU : XFSDeviceBase<WFSSIUSTATUS, WFSSIUCAPS>
     {
         public void SetGuidLight(GuidLights pos, LightControl con)
         {
@@ -25,5 +25,21 @@ namespace XFSNet.SIU
         {
             return base.GetEventClass() & (~XFSDefinition.USER_EVENTS);
         }
+        #region Virtual
+        protected override int StatusCommandCode
+        {
+            get
+            {
+                return SIUDefinition.WFS_INF_SIU_STATUS;
+            }
+        }
+        protected override int CapabilityCommandCode
+        {
+            get
+            {
+                return SIUDefinition.WFS_INF_SIU_CAPABILITIES;
+            }
+        }
+        #endregion
     }
 }

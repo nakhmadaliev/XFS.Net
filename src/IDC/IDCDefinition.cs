@@ -56,6 +56,32 @@ namespace XFSNet.IDC
         public const int WFS_IDC_GUIDLIGHTS_SIZE = 32;
         public const int WFS_IDC_GUIDLIGHTS_MAX = WFS_IDC_GUIDLIGHTS_SIZE - 1;
         public const int WFS_IDC_GUIDANCE_CARDUNIT = 0;
+
+        #region IDC Errors
+        public const int WFS_ERR_IDC_MEDIAJAM = (-(IDC_SERVICE_OFFSET + 0));
+        public const int WFS_ERR_IDC_NOMEDIA = (-(IDC_SERVICE_OFFSET + 1));
+        public const int WFS_ERR_IDC_MEDIARETAINED = (-(IDC_SERVICE_OFFSET + 2));
+        public const int WFS_ERR_IDC_RETAINBINFULL = (-(IDC_SERVICE_OFFSET + 3));
+        public const int WFS_ERR_IDC_INVALIDDATA = (-(IDC_SERVICE_OFFSET + 4));
+        public const int WFS_ERR_IDC_INVALIDMEDIA = (-(IDC_SERVICE_OFFSET + 5));
+        public const int WFS_ERR_IDC_FORMNOTFOUND = (-(IDC_SERVICE_OFFSET + 6));
+        public const int WFS_ERR_IDC_FORMINVALID = (-(IDC_SERVICE_OFFSET + 7));
+        public const int WFS_ERR_IDC_DATASYNTAX = (-(IDC_SERVICE_OFFSET + 8));
+        public const int WFS_ERR_IDC_SHUTTERFAIL = (-(IDC_SERVICE_OFFSET + 9));
+        public const int WFS_ERR_IDC_SECURITYFAIL = (-(IDC_SERVICE_OFFSET + 10));
+        public const int WFS_ERR_IDC_PROTOCOLNOTSUPP = (-(IDC_SERVICE_OFFSET + 11));
+        public const int WFS_ERR_IDC_ATRNOTOBTAINED = (-(IDC_SERVICE_OFFSET + 12));
+        public const int WFS_ERR_IDC_INVALIDKEY = (-(IDC_SERVICE_OFFSET + 13));
+        public const int WFS_ERR_IDC_WRITE_METHOD = (-(IDC_SERVICE_OFFSET + 14));
+        public const int WFS_ERR_IDC_CHIPPOWERNOTSUPP = (-(IDC_SERVICE_OFFSET + 15));
+        public const int WFS_ERR_IDC_CARDTOOSHORT = (-(IDC_SERVICE_OFFSET + 16));
+        public const int WFS_ERR_IDC_CARDTOOLONG = (-(IDC_SERVICE_OFFSET + 17));
+        public const int WFS_ERR_IDC_INVALID_PORT = (-(IDC_SERVICE_OFFSET + 18));
+        public const int WFS_ERR_IDC_POWERSAVETOOSHORT = (-(IDC_SERVICE_OFFSET + 19));
+        public const int WFS_ERR_IDC_POWERSAVEMEDIAPRESENT = (-(IDC_SERVICE_OFFSET + 20));
+        public const int WFS_ERR_IDC_CARDPRESENT = (-(IDC_SERVICE_OFFSET + 21));
+        public const int WFS_ERR_IDC_POSITIONINVALID = (-(IDC_SERVICE_OFFSET + 22));
+        #endregion
     }
 
     public enum IDCMediaStatus : ushort
@@ -114,6 +140,7 @@ namespace XFSNet.IDC
     [Flags]
     public enum IDCDataSource : ushort
     {
+        WFS_IDC_NOTSUPP = 0,
         WFS_IDC_TRACK1 = 0x0001,
         WFS_IDC_TRACK2 = 0x0002,
         WFS_IDC_TRACK3 = 0x0004,
@@ -128,6 +155,17 @@ namespace XFSNet.IDC
         WFS_IDC_FRONTIMAGE = 0x0100,
         WFS_IDC_BACKIMAGE = 0x0200,
         WFS_IDC_DDI = 0x4000
+    }
+    public enum IDCChipProtocols : ushort
+    {
+        WFS_IDC_NOTSUPP = 0,
+        WFS_IDC_CHIPT0 = 0x0001,
+        WFS_IDC_CHIPT1 = 0x0002,
+        WFS_IDC_CHIP_PROTOCOL_NOT_REQUIRED = 0x0004,
+        WFS_IDC_CHIPTYPEA_PART3 = 0x0008,
+        WFS_IDC_CHIPTYPEA_PART4 = 0x0010,
+        WFS_IDC_CHIPTYPEB = 0x0020,
+        WFS_IDC_CHIPNFC = 0x0040
     }
     public enum IDCSourceStatus : ushort
     {
@@ -174,18 +212,60 @@ namespace XFSNet.IDC
         WFS_IDC_DEVICEPOSUNKNOWN = 2,
         WFS_IDC_DEVICEPOSNOTSUPP = 3
     }
-    public enum IDCAntiFraudModule : ushort
+    public enum IDCType : ushort
     {
-        WFS_IDC_AFMNOTSUPP = 0,
-        WFS_IDC_AFMOK = 1,
-        WFS_IDC_AFMINOP = 2,
-        WFS_IDC_AFMDEVICEDETECTED = 3,
-        WFS_IDC_AFMUNKNOWN = 4
+        WFS_IDC_TYPEMOTOR = 1,
+        WFS_IDC_TYPESWIPE = 2,
+        WFS_IDC_TYPEDIP = 3,
+        WFS_IDC_TYPECONTACTLESS = 4,
+        WFS_IDC_TYPELATCHEDDIP = 5,
+        WFS_IDC_TYPEPERMANENT = 6
+    }
+    public enum IDCSecType : ushort
+    {
+        WFS_IDC_SECNOTSUPP = 1,
+        WFS_IDC_SECMMBOX = 2,
+        WFS_IDC_SECCIM86 = 3
+    }
+    public enum IDCPowerSwitchOption : ushort
+    {
+        WFS_IDC_NOACTION = 1,
+        WFS_IDC_EJECT = 2,
+        WFS_IDC_RETAIN = 3,
+        WFS_IDC_EJECTTHENRETAIN = 4,
+        WFS_IDC_READPOSITION = 5
+    }
+    [Flags]
+    public enum IDCWriteMode : ushort
+    {
+        WFS_IDC_LOCO = 0x0002,
+        WFS_IDC_HICO = 0x0004,
+        WFS_IDC_AUTO = 0x0008
+    }
+    [Flags]
+    public enum IDCChipPower : ushort
+    {
+        WFS_IDC_CHIPPOWERCOLD = 0x0002,
+        WFS_IDC_CHIPPOWERWARM = 0x0004,
+        WFS_IDC_CHIPPOWEROFF = 0x0008
+    }
+    [Flags]
+    public enum IDCDIPMode : ushort
+    {
+        WFS_IDC_DIP_UNKNOWN = 0x0001,
+        WFS_IDC_DIP_EXIT = 0x0002,
+        WFS_IDC_DIP_ENTRY = 0x0004,
+        WFS_IDC_DIP_ENTRY_EXIT = 0x0008
+    }
+    public enum IDCEjectPosition : ushort
+    {
+        WFS_IDC_EXITPOSITION = 0x0001,
+        WFS_IDC_TRANSPORTPOSITION = 0x0002
     }
     [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
-    public unsafe struct WFSIDCSTATUS
+    public unsafe class WFSIDCSTATUS
     {
-        public DEVSTATUS fwDevice;
+        public DEVSTATUS fwDevice { get; set; }
         public IDCMediaStatus fwMedia;
         public IDCRetainBinStatus fwRetainBin;
         public IDCSecurityStatus fwSecurity;
@@ -201,36 +281,38 @@ namespace XFSNet.IDC
         public IDCImageModule fwBackImageModule;
         public IDCDevicePosition wDevicePosition;
         public ushort usPowerSaveRecoveryTime;
-        public ushort* lpwParkingStationMedia;
-        public IDCAntiFraudModule wAntiFraudModule;
+        internal ushort* lpwParkingStationMedia;
+        public AntiFraudModule wAntiFraudModule;
     }
     [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
-    public unsafe struct WFSIDCCAPS
+    public unsafe class WFSIDCCAPS
     {
-        ushort wClass;
-        ushort fwType;
-        bool bCompound;
-        ushort fwReadTracks;
-        ushort fwWriteTracks;
-        ushort fwChipProtocols;
-        ushort usCards;
-        ushort fwSecType;
-        ushort fwPowerOnOption;
-        ushort fwPowerOffOption;
-        bool bFluxSensorProgrammable;
-        bool bReadWriteAccessFollowingEject;
-        ushort fwWriteMode;
-        ushort fwChipPower;
-        string lpszExtra;
-        ushort fwDIPMode;
-        ushort* lpwMemoryChipProtocols;
-        ushort fwEjectPosition;
-        bool bPowerSaveControl;
-        ushort usParkingStations;
-        bool bAntiFraudModule;
+        public ushort wClass;
+        public IDCType fwType;
+        public bool bCompound;
+        public IDCDataSource fwReadTracks;
+        public IDCDataSource fwWriteTracks;
+        public IDCChipProtocols fwChipProtocols;
+        public ushort usCards;
+        public IDCSecType fwSecType;
+        public IDCPowerSwitchOption fwPowerOnOption;
+        public IDCPowerSwitchOption fwPowerOffOption;
+        public bool bFluxSensorProgrammable;
+        public bool bReadWriteAccessFollowingEject;
+        public IDCWriteMode fwWriteMode;
+        public IDCChipPower fwChipPower;
+        public string lpszExtra;
+        public IDCDIPMode fwDIPMode;
+        internal ushort* lpwMemoryChipProtocols;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = IDCDefinition.WFS_IDC_GUIDLIGHTS_SIZE)]
+        public IDCGuidLightStatus[] dwGuidLights;
+        public IDCEjectPosition fwEjectPosition;
+        public bool bPowerSaveControl;
+        public ushort usParkingStations;
+        public bool bAntiFraudModule;
     }
     [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
-    public struct WFSIDCFORM
+    public class WFSIDCFORM
     {
         string lpszFormName;
         char cFieldSeparatorTrack1;

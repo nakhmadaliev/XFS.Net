@@ -57,12 +57,56 @@ namespace XFSNet
         {
             RuntimeTypeHandle ptr = t.TypeHandle;
             int size = 0;
-            if(!marshalSizeCache.TryGetValue(ptr,out size))
+            if (!marshalSizeCache.TryGetValue(ptr, out size))
             {
                 size = Marshal.SizeOf(t);
                 marshalSizeCache.TryAdd(ptr, size);
             }
             return size;
+        }
+
+        public static string[] GetSeratedStringFromPointer(IntPtr ptr)
+        {
+            if (ptr != IntPtr.Zero)
+            {
+                List<string> strLst = new List<string>(12);
+                byte[] buf = new byte[128];
+                bool zeroFlag = false;
+                int bufIndex = 0;
+                for (int i = 0; ; ++i)
+                {
+                    byte bTemp = Marshal.ReadByte(ptr, i);
+                    if (bTemp == 0)
+                    {
+                        if (zeroFlag)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            zeroFlag = true;
+                            if(bufIndex>0)
+                            {
+                                strLst.Add(Encoding.Default.GetString(buf, 0, bufIndex));
+                            }
+                            bufIndex = 0;
+                        }
+                    }
+                    else
+                    {
+                        zeroFlag = false;
+                        if(bufIndex==buf.Length)
+                        {
+                            byte[] bufTemp = new byte[buf.Length * 2];
+                            Array.Copy(buf, bufTemp, buf.Length);
+                            buf = bufTemp;
+                        }
+                        buf[bufIndex++] = bTemp;
+                    }
+                }
+                return strLst.ToArray();
+            }
+            return null;
         }
     }
 }

@@ -11,6 +11,7 @@ using XFSNet.IDC;
 using XFSNet.PIN;
 using XFSNet.CDM;
 using XFSNet.SIU;
+using System.Runtime.InteropServices;
 
 namespace TestForm
 {
@@ -22,20 +23,18 @@ namespace TestForm
         private SIU siu = new SIU();
         public Form1()
         {
-           int p= XFSUtil.ParseVersionString("3.10", "3.20");
-            string s = p.ToString("X8");
             InitializeComponent();
             Controls.Add(device);
             device.RegisterComplete += Device_RegisterComplete;
             device.RegisterError += Device_RegisterError;
             device.OpenError += Device_OpenError;
-            //device.Open("IDCARDUNIT1");
-            cdm.Open("CURRENCYDISPENSER1");
+            device.Open("IDC30", lowVersion: "3.00", highVersion: "3.00");
+            //cdm.Open("CURRENCYDISPENSER1");
             pin.PINKey += Pin_PINKey;
            // pin.Open("PINPAD1");
             cdm.DispenComplete += Cdm_DispenComplete;
             //cdm.Open("CURRENCYDISPENSER1");
-            siu.Open("SIU");
+            //siu.Open("SIU");
         }
 
         private void Cdm_DispenComplete()
@@ -96,6 +95,24 @@ namespace TestForm
         private void button7_Click(object sender, EventArgs e)
         {
             siu.SetGuidLight(GuidLights.WFS_SIU_NOTESDISPENSER, LightControl.WFS_SIU_MEDIUM_FLASH);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            WFSIDCSTATUS stu = new WFSIDCSTATUS();
+            device.GetStatus(out stu);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            WFSIDCCAPS cap = new WFSIDCCAPS();
+            device.GetCapability(out cap);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            int size = Marshal.SizeOf(typeof(WFSIDCCAPS));
+            Console.WriteLine(size);
         }
     }
 }

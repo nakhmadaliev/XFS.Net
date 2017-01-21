@@ -6,7 +6,7 @@ using System.Text;
 
 namespace XFSNet.CDM
 {
-    public unsafe class CDM : XFSDeviceBase
+    public unsafe class CDM : XFSDeviceBase<WFSCDMSTATUS, WFSCDMCAPS>
     {
         public event Action<int> DispenseError;
         public event Action DispenComplete;
@@ -93,5 +93,21 @@ namespace XFSNet.CDM
             if (ItemsTaken != null)
                 ItemsTaken();
         }
+        #region Virtual
+        protected override int StatusCommandCode
+        {
+            get
+            {
+                return CDMDefinition.WFS_INF_CDM_STATUS;
+            }
+        }
+        protected override int CapabilityCommandCode
+        {
+            get
+            {
+                return CDMDefinition.WFS_INF_CDM_CAPABILITIES;
+            }
+        }
+        #endregion
     }
 }

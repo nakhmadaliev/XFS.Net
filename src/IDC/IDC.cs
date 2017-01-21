@@ -12,14 +12,24 @@ using System.Runtime.InteropServices;
 
 namespace XFSNet.IDC
 {
-    public unsafe class IDC : XFSDeviceBase
+    public unsafe class IDC : XFSDeviceBase<WFSIDCSTATUS, WFSIDCCAPS>
     {
-        public event Action<int> ReadRawDataError;
+        #region consturctor
+        public IDC()
+        {
+            executeCompleteHandlers = new Dictionary<int, XFSNet.XFSMessageHandler<object>>();
+            executeCompleteHandlers.Add(IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new XFSMessageHandler(ReadRawDataError, OnReadRawDataComplete));
+        }
+        #endregion
+        public event Action<string, int, string> ReadRawDataError;
         public event Action<IDCCardData[]> ReadRawDataComplete;
         public event Action EjectComplete;
-        public event Action<int> EjectError;
+        public event Action<int> RetainComplete;
+        public event Action<string, int, string> EjectError;
+        public event Action<string, int, string> RetainError;
         public event Action MediaInserted;
         public event Action MediareMoved;
+
         protected override void OnExecuteComplete(ref WFSRESULT result)
         {
             switch (result.dwCommandCodeOrEventID)
@@ -27,40 +37,19 @@ namespace XFSNet.IDC
                 case IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA:
                     if (result.hResult == XFSDefinition.WFS_SUCCESS)
                     {
-                        WFSIDCCardData[] data = XFSUtil.XFSPtrToArray<WFSIDCCardData>(result.lpBuffer);
-                        IDCCardData[] outerData = new IDCCardData[data.Length];
-                        for (int i = 0; i < data.Length; ++i)
-                        {
-                            outerData[i] = new IDCCardData();
-                            outerData[i].DataSource = data[i].wDataSource;
-                            outerData[i].WriteMethod = data[i].fwWriteMethod;
-                            outerData[i].Status = data[i].wStatus;
-                            if (data[i].ulDataLength > 0)
-                            {
-                                outerData[i].Data = new byte[data[i].ulDataLength];
-                                for (int j = 0; j < data[i].ulDataLength; ++j)
-                                    outerData[i].Data[j] = Marshal.ReadByte(data[i].lpbData, j);
-                            }
-                        }
-                        OnReadRawDataComplete(outerData);
+                       // NewMethod(result);
                     }
                     else
                     {
-                        OnReadRawDataError(result.hResult);
+                        OnExecuteError(ReadRawDataError, result.hResult);
                     }
                     break;
                 case IDCDefinition.WFS_CMD_IDC_EJECT_CARD:
-                    if (result.hResult == XFSDefinition.WFS_SUCCESS)
-                    {
-                        OnEjectComplete();
-                    }
-                    else
-                    {
-                        OnEjectError(result.hResult);
-                    }
+                    HandleExecutionResult(result.hResult, OnEjectComplete, EjectError);
                     break;
             }
         }
+
         protected override void OnExecuteEvent(ref WFSRESULT result)
         {
             switch (result.dwCommandCodeOrEventID)
@@ -83,34 +72,36 @@ namespace XFSNet.IDC
         {
             int hResult = XfsApi.WFSAsyncExecute(hService, IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new IntPtr(&sources), 0,
                 Handle, ref requestID);
-            if (hResult != XFSDefinition.WFS_SUCCESS)
-                OnReadRawDataError(hResult);
+            HandleAysncExcutionResult(hResult, ReadRawDataError);
         }
         public void EjectCard()
         {
-            int hResult = XfsApi.WFSAsyncExecute(hService, IDCDefinition.WFS_CMD_IDC_EJECT_CARD, IntPtr.Zero, 0, Handle, ref requestID);
-            if (hResult != XFSDefinition.WFS_SUCCESS)
-            {
-                OnEjectError(hResult);
-            }
+            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_EJECT_CARD, IntPtr.Zero, EjectError);
+        }
+        public void RetainCard()
+        {
+            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_RETAIN_CARD, IntPtr.Zero);
         }
         #region Event handler
-        protected virtual void OnReadRawDataError(int code)
+        protected void OnReadRawDataComplete(ref IntPtr ptr)
         {
-            if (ReadRawDataError != null)
-                ReadRawDataError(code);
-        }
-        protected virtual void OnReadRawDataComplete(IDCCardData[] data)
-        {
-            if (ReadRawDataComplete != null)
-                ReadRawDataComplete(data);
-        }
-        protected virtual void OnEjectError(int code)
-        {
-            if (EjectError != null)
+            WFSIDCCardData[] data = XFSUtil.XFSPtrToArray<WFSIDCCardData>(ptr);
+            IDCCardData[] outerData = new IDCCardData[data.Length];
+            for (int i = 0; i < data.Length; ++i)
             {
-                EjectError(code);
+                outerData[i] = new IDCCardData();
+                outerData[i].DataSource = data[i].wDataSource;
+                outerData[i].WriteMethod = data[i].fwWriteMethod;
+                outerData[i].Status = data[i].wStatus;
+                if (data[i].ulDataLength > 0)
+                {
+                    outerData[i].Data = new byte[data[i].ulDataLength];
+                    for (int j = 0; j < data[i].ulDataLength; ++j)
+                        outerData[i].Data[j] = Marshal.ReadByte(data[i].lpbData, j);
+                }
             }
+            if (ReadRawDataComplete != null)
+                ReadRawDataComplete(outerData);
         }
         protected virtual void OnEjectComplete()
         {
@@ -126,6 +117,28 @@ namespace XFSNet.IDC
         {
             if (MediareMoved != null)
                 MediareMoved();
+        }
+        protected virtual void OnRetainComplete(int count)
+        {
+            if (RetainComplete != null)
+                RetainComplete(count);
+        }
+        #endregion
+
+        #region Virtual
+        protected override int StatusCommandCode
+        {
+            get
+            {
+                return IDCDefinition.WFS_INF_IDC_STATUS;
+            }
+        }
+        protected override int CapabilityCommandCode
+        {
+            get
+            {
+                return IDCDefinition.WFS_INF_IDC_CAPABILITIES;
+            }
         }
         #endregion
     }

@@ -151,4 +151,527 @@ namespace XFSNet.PIN
         public XFSPINKey ulTerminateFDKs;
         public XFSPINKey ulTerminateKeys;
     }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSXDATA
+    {
+        public ushort usLength;
+        public IntPtr lpbData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSTATUS
+    {
+        public ushort fwDevice;
+        public ushort fwEncStat;
+        public string lpszExtra;
+        public ushort fwAutoBeepMode;
+        public int dwCertificateState;
+        public ushort wDevicePosition;
+        public ushort usPowerSaveRecoveryTime;
+        public ushort wAntiFraudModule;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public unsafe struct WFSPINCAPS
+    {
+        public ushort wClass;
+        public ushort fwType;
+        public bool bCompound;
+        public ushort usKeyNum;
+        public ushort fwAlgorithms;
+        public ushort fwPinFormats;
+        public ushort fwDerivationAlgorithms;
+        public ushort fwPresentationAlgorithms;
+        public ushort fwDisplay;
+        public bool bIDConnect;
+        public ushort fwIDKey;
+        public ushort fwValidationAlgorithms;
+        public ushort fwKeyCheckModes;
+        public string lpszExtra;
+        public bool bPINCanPersistAfterUse;
+        public ushort fwAutoBeep;
+        public string lpsHSMVendor;
+        public bool bHSMJournaling;
+        public int dwRSAAuthenticationScheme;
+        public int dwRSASignatureAlgorithm;
+        public int dwRSACryptAlgorithm;
+        public int dwRSAKeyCheckMode;
+        public int dwSignatureScheme;
+        public ushort* lpwEMVImportSchemes;
+        public ushort fwEMVHashAlgorithm;
+        public bool bKeyImportThroughParts;
+        public ushort fwENCIOProtocols;
+        public bool bTypeCombined;
+        public bool bSetPinblockDataRequired;
+        public ushort fwKeyBlockImportFormats;
+        public bool bPowerSaveControl;
+        public bool bAntiFraudModule;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINKEYDETAIL
+    {
+        public string lpsKeyName;
+        public ushort fwUse;
+        public bool bLoaded;
+        public IntPtr lpxKeyBlockHeader;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINFDK
+    {
+        public uint ulFDK;
+        public ushort usXPosition;
+        public ushort usYPosition;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINFUNCKEYDETAIL
+    {
+        public uint ulFuncMask;
+        public ushort usNumberFDKs;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINKEYDETAILEX
+    {
+        public string lpsKeyName;
+        public int dwUse;
+        public byte bGeneration;
+        public byte bVersion;
+        public bool bLoaded;
+        public IntPtr lpxKeyBlockHeader;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINHEXKEYS
+    {
+        public ushort usXPos;
+        public ushort usYPos;
+        public ushort usXSize;
+        public ushort usYSize;
+        public uint ulFK;
+        public uint ulShiftFK;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSECUREKEYDETAIL
+    {
+        public ushort fwKeyEntryMode;
+        public IntPtr lpFuncKeyDetail;
+        public uint ulClearFDK;
+        public uint ulCancelFDK;
+        public uint ulBackspaceFDK;
+        public uint ulEnterFDK;
+        public ushort wColumns;
+        public ushort wRows;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINPCIPTSDEVICEID
+    {
+        public string lpszManufacturerIdentifier;
+        public string lpszModelIdentifier;
+        public string lpszHardwareIdentifier;
+        public string lpszFirmwareIdentifier;
+        public string lpszApplicationIdentifier;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINCRYPT
+    {
+        public ushort wMode;
+        public string lpsKey;
+        public IntPtr lpxKeyEncKey;
+        public ushort wAlgorithm;
+        public string lpsStartValueKey;
+        public IntPtr lpxStartValue;
+        public byte bPadding;
+        public byte bCompression;
+        public IntPtr lpxCryptData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORT
+    {
+        public string lpsKey;
+        public string lpsEncKey;
+        public IntPtr lpxIdent;
+        public IntPtr lpxValue;
+        public ushort fwUse;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINDERIVE
+    {
+        public ushort wDerivationAlgorithm;
+        public string lpsKey;
+        public string lpsKeyGenKey;
+        public string lpsStartValueKey;
+        public IntPtr lpxStartValue;
+        public byte bPadding;
+        public IntPtr lpxInputData;
+        public IntPtr lpxIdent;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINGETPIN
+    {
+        public ushort usMinLen;
+        public ushort usMaxLen;
+        public bool bAutoEnd;
+        public char cEcho;
+        public uint ulActiveFDKs;
+        public uint ulActiveKeys;
+        public uint ulTerminateFDKs;
+        public uint ulTerminateKeys;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINENTRY
+    {
+        public ushort usDigits;
+        public ushort wCompletion;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINLOCALDES
+    {
+        public string lpsValidationData;
+        public string lpsOffset;
+        public byte bPadding;
+        public ushort usMaxPIN;
+        public ushort usValDigits;
+        public bool bNoLeadingZero;
+        public string lpsKey;
+        public IntPtr lpxKeyEncKey;
+        public string lpsDecTable;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINCREATEOFFSET
+    {
+        public string lpsValidationData;
+        public byte bPadding;
+        public ushort usMaxPIN;
+        public ushort usValDigits;
+        public string lpsKey;
+        public IntPtr lpxKeyEncKey;
+        public string lpsDecTable;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINLOCALEUROCHEQUE
+    {
+        public string lpsEurochequeData;
+        public string lpsPVV;
+        public ushort wFirstEncDigits;
+        public ushort wFirstEncOffset;
+        public ushort wPVVDigits;
+        public ushort wPVVOffset;
+        public string lpsKey;
+        public IntPtr lpxKeyEncKey;
+        public string lpsDecTable;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINLOCALVISA
+    {
+        public string lpsPAN;
+        public string lpsPVV;
+        public ushort wPVVDigits;
+        public string lpsKey;
+        public IntPtr lpxKeyEncKey;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINPRESENTIDC
+    {
+        public ushort wPresentAlgorithm;
+        public ushort wChipProtocol;
+        public uint ulChipDataLength;
+        public IntPtr lpbChipData;
+        public IntPtr lpAlgorithmData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINPRESENTRESULT
+    {
+        public ushort wChipProtocol;
+        public uint ulChipDataLength;
+        public IntPtr lpbChipData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINPRESENTCLEAR
+    {
+        public uint ulPINPointer;
+        public ushort usPINOffset;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINBLOCK
+    {
+        public string lpsCustomerData;
+        public string lpsXORData;
+        public byte bPadding;
+        public ushort wFormat;
+        public string lpsKey;
+        public string lpsKeyEncKey;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINDATA
+    {
+        public ushort usKeys;
+        public ushort wCompletion;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPININIT
+    {
+        public IntPtr lpxIdent;
+        public IntPtr lpxKey;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINLOCALBANKSYS
+    {
+        public IntPtr lpxATMVAC;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINBANKSYSIO
+    {
+        public uint ulLength;
+        public IntPtr lpbData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSECMSG
+    {
+        public ushort wProtocol;
+        public uint ulLength;
+        public IntPtr lpbMsg;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTKEYEX
+    {
+        public string lpsKey;
+        public string lpsEncKey;
+        public IntPtr lpxValue;
+        public IntPtr lpxControlVector;
+        public int dwUse;
+        public ushort wKeyCheckMode;
+        public IntPtr lpxKeyCheckValue;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINENCIO
+    {
+        public ushort wProtocol;
+        public uint ulDataLength;
+        public IntPtr lpvData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSECUREKEYENTRY
+    {
+        public ushort usKeyLen;
+        public bool bAutoEnd;
+        public uint ulActiveFDKs;
+        public uint ulActiveKeys;
+        public uint ulTerminateFDKs;
+        public uint ulTerminateKeys;
+        public ushort wVerificationType;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSECUREKEYENTRYOUT
+    {
+        public ushort usDigits;
+        public ushort wCompletion;
+        public IntPtr lpxKCV;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTKEYBLOCK
+    {
+        public string lpsKey;
+        public string lpsEncKey;
+        public IntPtr lpxKeyBlock;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTRSAPUBLICKEY
+    {
+        public string lpsKey;
+        public IntPtr lpxValue;
+        public int dwUse;
+        public string lpsSigKey;
+        public int dwRSASignatureAlgorithm;
+        public IntPtr lpxSignature;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTRSAPUBLICKEYOUTPUT
+    {
+        public int dwRSAKeyCheckMode;
+        public IntPtr lpxKeyCheckValue;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINEXPORTRSAISSUERSIGNEDITEM
+    {
+        public ushort wExportItemType;
+        public string lpsName;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINEXPORTRSAISSUERSIGNEDITEMOUTPUT
+    {
+        public IntPtr lpxValue;
+        public int dwRSASignatureAlgorithm;
+        public IntPtr lpxSignature;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTRSASIGNEDDESKEY
+    {
+        public string lpsKey;
+        public string lpsDecryptKey;
+        public int dwRSAEncipherAlgorithm;
+        public IntPtr lpxValue;
+        public int dwUse;
+        public string lpsSigKey;
+        public int dwRSASignatureAlgorithm;
+        public IntPtr lpxSignature;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTRSASIGNEDDESKEYOUTPUT
+    {
+        public ushort wKeyLength;
+        public ushort wKeyCheckMode;
+        public IntPtr lpxKeyCheckValue;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINGENERATERSAKEYPAIR
+    {
+        public string lpsKey;
+        public int dwUse;
+        public ushort wModulusLength;
+        public ushort wExponentValue;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINEXPORTRSAEPPSIGNEDITEM
+    {
+        public ushort wExportItemType;
+        public string lpsName;
+        public string lpsSigKey;
+        public int dwSignatureAlgorithm;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINEXPORTRSAEPPSIGNEDITEMOUTPUT
+    {
+        public IntPtr lpxValue;
+        public IntPtr lpxSelfSignature;
+        public IntPtr lpxSignature;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINLOADCERTIFICATE
+    {
+        public IntPtr lpxLoadCertificate;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINLOADCERTIFICATEOUTPUT
+    {
+        public IntPtr lpxCertificateData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINGETCERTIFICATE
+    {
+        public ushort wGetCertificate;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINGETCERTIFICATEOUTPUT
+    {
+        public IntPtr lpxCertificate;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINREPLACECERTIFICATE
+    {
+        public IntPtr lpxReplaceCertificate;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINREPLACECERTIFICATEOUTPUT
+    {
+        public IntPtr lpxNewCertificateData;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSTARTKEYEXCHANGE
+    {
+        public IntPtr lpxRandomItem;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINIMPORTRSAENCIPHEREDPKCS7KEY
+    {
+        public IntPtr lpxImportRSAKeyIn;
+        public string lpsKey;
+        public int dwUse;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINEMVIMPORTPUBLICKEY
+    {
+        public string lpsKey;
+        public int dwUse;
+        public ushort wImportScheme;
+        public IntPtr lpxImportData;
+        public string lpsSigKey;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINEMVIMPORTPUBLICKEYOUTPUT
+    {
+        public string lpsExpiryDate;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINDIGEST
+    {
+        public ushort wHashAlgorithm;
+        public IntPtr lpxDigestInput;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINDIGESTOUTPUT
+    {
+        public IntPtr lpxDigestOutput;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINHSMINIT
+    {
+        public ushort wInitMode;
+        public IntPtr lpxOnlineTime;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINGENERATEKCV
+    {
+        public string lpsKey;
+        public ushort wKeyCheckMode;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINKCV
+    {
+        public IntPtr lpxKCV;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINSETGUIDLIGHT
+    {
+        public ushort wGuidLight;
+        public int dwCommand;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINMAINTAINPIN
+    {
+        public bool bMaintainPIN;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINHSMINFO
+    {
+        public ushort wHSMSerialNumber;
+        public string lpsZKAID;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINHSMDETAIL
+    {
+        public ushort wActiveLogicalHSM;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINHSMIDENTIFIER
+    {
+        public ushort wHSMSerialNumber;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINPOWERSAVECONTROL
+    {
+        public ushort usMaxPowerSaveRecoveryTime;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINACCESS
+    {
+        public string lpsKeyName;
+        public int lErrorCode;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINDEVICEPOSITION
+    {
+        public ushort wPosition;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = XFSConstants.STRUCTPACKSIZE, CharSet = XFSConstants.CHARSET)]
+    public struct WFSPINPOWERSAVECHANGE
+    {
+        public ushort usPowerSaveRecoveryTime;
+    }
+
 }
