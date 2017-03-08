@@ -17,8 +17,9 @@ namespace XFSNet.IDC
         #region consturctor
         public IDC()
         {
-            executeCompleteHandlers = new Dictionary<int, XFSNet.XFSMessageHandler<object>>();
-            executeCompleteHandlers.Add(IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new XFSMessageHandler(ReadRawDataError, OnReadRawDataComplete));
+            executeCompleteHandlers = new Dictionary<int, XFSNet.XFSMessageHandler>();
+            executeCompleteHandlers.Add(IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new XFSMessageHandler(ReadRawDataError, OnReadRawDataComplete,null));
+            executeCompleteHandlers.Add(IDCDefinition.WFS_CMD_IDC_EJECT_CARD, new XFSMessageHandler(EjectError, OnEjectComplete, null));
         }
         #endregion
         public event Action<string, int, string> ReadRawDataError;
@@ -29,33 +30,15 @@ namespace XFSNet.IDC
         public event Action<string, int, string> RetainError;
         public event Action MediaInserted;
         public event Action MediareMoved;
-
-        protected override void OnExecuteComplete(ref WFSRESULT result)
-        {
-            switch (result.dwCommandCodeOrEventID)
-            {
-                case IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA:
-                    if (result.hResult == XFSDefinition.WFS_SUCCESS)
-                    {
-                       // NewMethod(result);
-                    }
-                    else
-                    {
-                        OnExecuteError(ReadRawDataError, result.hResult);
-                    }
-                    break;
-                case IDCDefinition.WFS_CMD_IDC_EJECT_CARD:
-                    HandleExecutionResult(result.hResult, OnEjectComplete, EjectError);
-                    break;
-            }
-        }
-
+        public event Action InvalidMedia;
         protected override void OnExecuteEvent(ref WFSRESULT result)
         {
             switch (result.dwCommandCodeOrEventID)
             {
                 case IDCDefinition.WFS_EXEE_IDC_MEDIAINSERTED:
                     OnMediaInserted();
+                    break;
+                case IDCDefinition.WFS_EXEE_IDC_INVALIDMEDIA:
                     break;
             }
         }
@@ -66,6 +49,13 @@ namespace XFSNet.IDC
                 case IDCDefinition.WFS_SRVE_IDC_MEDIAREMOVED:
                     OnMediareMoved();
                     break;
+            }
+        }
+        protected override void OnUserEvent(ref WFSRESULT result)
+        {
+            switch(result.dwCommandCodeOrEventID)
+            {
+                 
             }
         }
         public void ReadRawData(IDCDataSource sources)
@@ -83,8 +73,9 @@ namespace XFSNet.IDC
             ExecuteCommand(IDCDefinition.WFS_CMD_IDC_RETAIN_CARD, IntPtr.Zero);
         }
         #region Event handler
-        protected void OnReadRawDataComplete(ref IntPtr ptr)
+        protected void OnReadRawDataComplete(object  objPtr)
         {
+            IntPtr ptr = (IntPtr)objPtr;
             WFSIDCCardData[] data = XFSUtil.XFSPtrToArray<WFSIDCCardData>(ptr);
             IDCCardData[] outerData = new IDCCardData[data.Length];
             for (int i = 0; i < data.Length; ++i)
@@ -103,7 +94,7 @@ namespace XFSNet.IDC
             if (ReadRawDataComplete != null)
                 ReadRawDataComplete(outerData);
         }
-        protected virtual void OnEjectComplete()
+        protected virtual void OnEjectComplete(object obj)
         {
             if (EjectComplete != null)
                 EjectComplete();
