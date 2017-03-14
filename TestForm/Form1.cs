@@ -24,11 +24,11 @@ namespace TestForm
         public Form1()
         {
             InitializeComponent();
-            Controls.Add(device);
+            //Controls.Add(device);
             device.RegisterComplete += Device_RegisterComplete;
             device.RegisterError += Device_RegisterError;
             device.OpenError += Device_OpenError;
-            device.Open("IDC30", lowVersion: "3.00", highVersion: "3.00");
+            device.Open("IDCARDUNIT1", lowVersion: "3.10", highVersion: "3.10");
             //cdm.Open("CURRENCYDISPENSER1");
             pin.PINKey += Pin_PINKey;
            // pin.Open("PINPAD1");
@@ -49,17 +49,17 @@ namespace TestForm
 
         private void Device_OpenError(int obj)
         {
-            Console.WriteLine(obj);
+            MessageBox.Show("OpenError:" + obj);
         }
 
         private void Device_RegisterError(int obj)
         {
-            Console.WriteLine(obj);
+            MessageBox.Show("RegisterError:"+obj);
         }
 
         private void Device_RegisterComplete()
         {
-            Console.WriteLine("RegisterComplete");
+            MessageBox.Show("RegisterComplete");
         }
 
         private void button1_Click(object sender, EventArgs e)

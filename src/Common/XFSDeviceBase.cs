@@ -47,7 +47,8 @@ namespace XFSNet
         protected IntPtr MessageHandle;
         protected abstract int StatusCommandCode { get; }
         protected abstract int CapabilityCommandCode { get; }
-        internal Dictionary<int, XFSMessageHandler> executeCompleteHandlers;
+        protected Dictionary<int, XFSEventHandler> eventHandlers;
+        protected Dictionary<int, XFSCommandHandler> commandHandlers;
         #endregion
 
         public XFSDeviceBase()
@@ -60,7 +61,7 @@ namespace XFSNet
         protected override void WndProc(ref Message m)
         {
             if (m.Msg >= XFSDefinition.WFS_OPEN_COMPLETE &&
-                m.Msg <= XFSDefinition.WFS_TIMER_EVENT)
+                m.Msg <= XFSDefinition.WFS_SYSTEM_EVENT)
             {
                 WFSRESULT result = new WFSRESULT();
                 if (m.LParam != IntPtr.Zero)
@@ -80,16 +81,21 @@ namespace XFSNet
                         OnExecuteComplete(ref result);
                         break;
                     case XFSDefinition.WFS_EXECUTE_EVENT:
-                        OnExecuteEvent(ref result);
-                        break;
                     case XFSDefinition.WFS_SERVICE_EVENT:
-                        OnServiceEvent(ref result);
-                        break;
                     case XFSDefinition.WFS_USER_EVENT:
-                        OnUserEvent(ref result);
-                        break;
                     case XFSDefinition.WFS_SYSTEM_EVENT:
-                        OnSystemEvent(ref result);
+                        if (eventHandlers.ContainsKey(result.dwCommandCodeOrEventID))
+                        {
+                            var temp = eventHandlers[result.dwCommandCodeOrEventID];
+                            if (temp.EventHandler != null)
+                            {
+                                temp.EventHandler();
+                            }
+                            else if (temp.SubRoutine != null)
+                            {
+                                temp.SubRoutine(result.lpBuffer);
+                            }
+                        }
                         break;
                 }
                 XfsApi.WFSFreeResult(ref result);
@@ -160,7 +166,30 @@ namespace XFSNet
                 RegisterError(code);
         }
         protected virtual void OnExecuteComplete(ref WFSRESULT result)
-        { }
+        {
+            if (commandHandlers.ContainsKey(result.dwCommandCodeOrEventID))
+            {
+                XFSCommandHandler handler = commandHandlers[result.dwCommandCodeOrEventID];
+                if (result.hResult == XFSDefinition.WFS_SUCCESS)
+                {
+                    if (handler.EventHandler != null)
+                    {
+                        handler.EventHandler();
+                    }
+                    else if (handler.SubRoutine != null)
+                    {
+                        handler.SubRoutine(result.lpBuffer);
+                    }
+                }
+                else
+                {
+                    if (handler.ErrorHandler != null)
+                    {
+                        handler.ErrorHandler(serviceName, result.hResult, string.Empty);
+                    }
+                }
+            }
+        }
         protected virtual void OnExecuteEvent(ref WFSRESULT result)
         { }
         protected virtual void OnServiceEvent(ref WFSRESULT result)
@@ -241,7 +270,8 @@ namespace XFSNet
         protected void ExecuteCommand(int commandCode, IntPtr ptrParam, Action<string, int, string> errorHandler = null)
         {
             int hResult = XfsApi.WFSAsyncExecute(hService, commandCode, ptrParam, TimeOut, MessageHandle, ref requestID);
-            HandleAysncExcutionResult(hResult, errorHandler);
+            if (hResult != XFSDefinition.WFS_SUCCESS && errorHandler != null)
+                errorHandler(serviceName, hResult, string.Empty);
         }
         protected virtual void OnExecuteError(Action<string, int, string> errorHandler, int code)
         {

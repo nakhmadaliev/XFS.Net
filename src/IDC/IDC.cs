@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XFSNet;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace XFSNet.IDC
 {
@@ -17,65 +18,45 @@ namespace XFSNet.IDC
         #region consturctor
         public IDC()
         {
-            executeCompleteHandlers = new Dictionary<int, XFSNet.XFSMessageHandler>();
-            executeCompleteHandlers.Add(IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new XFSMessageHandler(ReadRawDataError, OnReadRawDataComplete,null));
-            executeCompleteHandlers.Add(IDCDefinition.WFS_CMD_IDC_EJECT_CARD, new XFSMessageHandler(EjectError, OnEjectComplete, null));
+            commandHandlers = new Dictionary<int, XFSCommandHandler>();
+            eventHandlers = new Dictionary<int, XFSEventHandler>();
+            commandHandlers.Add(IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new XFSCommandHandler(OnReadRawDataError, null, OnReadRawDataComplete));
+            commandHandlers.Add(IDCDefinition.WFS_CMD_IDC_EJECT_CARD, new XFSCommandHandler(OnEjectError, OnEjectComplete));
+            commandHandlers.Add(IDCDefinition.WFS_CMD_IDC_RETAIN_CARD, new XFSCommandHandler(OnRetainError, OnRetainComplete));
+            eventHandlers.Add(IDCDefinition.WFS_EXEE_IDC_MEDIAINSERTED, new XFSEventHandler(OnMediaInserted));
+            eventHandlers.Add(IDCDefinition.WFS_SRVE_IDC_MEDIAREMOVED, new XFSEventHandler(OnMediaRemoved));
+            eventHandlers.Add(IDCDefinition.WFS_EXEE_IDC_INVALIDMEDIA, new XFSEventHandler(OnInvalidMedia));
         }
         #endregion
+        #region Events
         public event Action<string, int, string> ReadRawDataError;
         public event Action<IDCCardData[]> ReadRawDataComplete;
         public event Action EjectComplete;
-        public event Action<int> RetainComplete;
+        public event Action RetainComplete;
         public event Action<string, int, string> EjectError;
         public event Action<string, int, string> RetainError;
         public event Action MediaInserted;
-        public event Action MediareMoved;
+        public event Action MediaRemoved;
         public event Action InvalidMedia;
-        protected override void OnExecuteEvent(ref WFSRESULT result)
-        {
-            switch (result.dwCommandCodeOrEventID)
-            {
-                case IDCDefinition.WFS_EXEE_IDC_MEDIAINSERTED:
-                    OnMediaInserted();
-                    break;
-                case IDCDefinition.WFS_EXEE_IDC_INVALIDMEDIA:
-                    break;
-            }
-        }
-        protected override void OnServiceEvent(ref WFSRESULT result)
-        {
-            switch (result.dwCommandCodeOrEventID)
-            {
-                case IDCDefinition.WFS_SRVE_IDC_MEDIAREMOVED:
-                    OnMediareMoved();
-                    break;
-            }
-        }
-        protected override void OnUserEvent(ref WFSRESULT result)
-        {
-            switch(result.dwCommandCodeOrEventID)
-            {
-                 
-            }
-        }
+        #endregion
+        #region API
         public void ReadRawData(IDCDataSource sources)
         {
-            int hResult = XfsApi.WFSAsyncExecute(hService, IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new IntPtr(&sources), 0,
-                Handle, ref requestID);
-            HandleAysncExcutionResult(hResult, ReadRawDataError);
+            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_READ_RAW_DATA, new IntPtr(&sources), OnReadRawDataError);
         }
         public void EjectCard()
         {
-            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_EJECT_CARD, IntPtr.Zero, EjectError);
+            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_EJECT_CARD, IntPtr.Zero, OnEjectError);
         }
         public void RetainCard()
         {
-            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_RETAIN_CARD, IntPtr.Zero);
+            ExecuteCommand(IDCDefinition.WFS_CMD_IDC_RETAIN_CARD, IntPtr.Zero,OnRetainError);
         }
+        #endregion
+
         #region Event handler
-        protected void OnReadRawDataComplete(object  objPtr)
+        protected void OnReadRawDataComplete(IntPtr ptr)
         {
-            IntPtr ptr = (IntPtr)objPtr;
             WFSIDCCardData[] data = XFSUtil.XFSPtrToArray<WFSIDCCardData>(ptr);
             IDCCardData[] outerData = new IDCCardData[data.Length];
             for (int i = 0; i < data.Length; ++i)
@@ -94,29 +75,49 @@ namespace XFSNet.IDC
             if (ReadRawDataComplete != null)
                 ReadRawDataComplete(outerData);
         }
-        protected virtual void OnEjectComplete(object obj)
+        protected virtual void OnReadRawDataError(string service, int code, string message)
+        {
+            if (ReadRawDataError != null)
+                ReadRawDataError(service, code, message);
+        }
+        protected virtual void OnEjectError(string service, int code, string message)
+        {
+            if (EjectError != null)
+                EjectError(service, code, message);
+        }
+        protected virtual void OnEjectComplete()
         {
             if (EjectComplete != null)
                 EjectComplete();
+        }
+        protected virtual void OnRetainError(string service, int code, string message)
+        {
+            if (RetainError != null)
+                RetainError(service, code, message);
+        }
+        protected virtual void OnRetainComplete()
+        {
+            if (RetainComplete != null)
+                RetainComplete();
         }
         protected virtual void OnMediaInserted()
         {
             if (MediaInserted != null)
                 MediaInserted();
         }
-        protected virtual void OnMediareMoved()
+        protected virtual void OnMediaRemoved()
         {
-            if (MediareMoved != null)
-                MediareMoved();
+            if (MediaRemoved != null)
+                MediaRemoved();
         }
-        protected virtual void OnRetainComplete(int count)
+        protected virtual void OnInvalidMedia()
         {
-            if (RetainComplete != null)
-                RetainComplete(count);
+            if (InvalidMedia != null)
+                InvalidMedia();
         }
         #endregion
 
-        #region Virtual
+        #region Override Property
         protected override int StatusCommandCode
         {
             get

@@ -70,7 +70,9 @@
     <Compile Include="Common\XFSDeviceBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Common\XFSMessageHandler.cs" />
+    <Compile Include="Common\XFSEventArgs.cs" />
+    <Compile Include="Common\XFSCommandHandler.cs" />
+    <Compile Include="Common\XFSEventHandler.cs" />
     <Compile Include="IDC\IDC.cs">
       <SubType>UserControl</SubType>
     </Compile>
