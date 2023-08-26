@@ -131,6 +131,27 @@ namespace XFSNet
             XfsApi.WFSFreeResult(pOutParam);
             return false;
         }
+
+        protected virtual bool InnerGetInfoWithUnMarshall<T>(int category, IntPtr inParam, Type type, out T value)
+        {
+            IntPtr pOutParam = IntPtr.Zero;
+
+            value = (T)Activator.CreateInstance(type);
+            int hResult = XfsApi.WFSGetInfo(hService, category, inParam, TimeOut, ref pOutParam);
+            if (hResult == XFSDefinition.WFS_SUCCESS)
+            {
+                WFSRESULT wfsResult = (WFSRESULT)Marshal.PtrToStructure(pOutParam, typeof(WFSRESULT));
+                if (wfsResult.hResult == XFSDefinition.WFS_SUCCESS)
+                {
+                    value = (T)((ISTATUS)value).UnMarshal(wfsResult.lpBuffer);
+                    XfsApi.WFSFreeResult(pOutParam);
+                    return true;
+                }
+            }
+            XfsApi.WFSFreeResult(pOutParam);
+            return false;
+        }
+
         protected void InnerRegister(int eventClasses)
         {
             int hResult = XfsApi.WFSAsyncRegister(hService, eventClasses, MessageHandle
@@ -199,7 +220,7 @@ namespace XFSNet
         protected virtual void OnSystemEvent(ref WFSRESULT result)
         { }
         public void Open(string logicName, bool paramAutoRegister = true,
-            string appID = "XFS.NET", string lowVersion = "3.0",
+            string appID = "XFSNET", string lowVersion = "3.0",
             string highVersion = "3.0")
         {
             serviceName = logicName;

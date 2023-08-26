@@ -40,10 +40,19 @@ namespace XFSNet
                 int len = 0;
                 for (int i = 0; Marshal.ReadIntPtr(IntPtr.Add(ptr, i)) != IntPtr.Zero; i += IntPtrSize)
                     ++len;
-                if (len > 0)
+                return XFSPtrToArray<T>(ptr, len);
+            }
+            return new T[0];
+        }
+
+        public static T[] XFSPtrToArray<T>(IntPtr ptr, int paramLen)
+        {
+            if (ptr != IntPtr.Zero)
+            {
+                if (paramLen > 0)
                 {
-                    T[] arr = new T[len];
-                    for (int i = 0; i < len; ++i)
+                    T[] arr = new T[paramLen];
+                    for (int i = 0; i < paramLen; ++i)
                     {
                         arr[i] = (T)Marshal.PtrToStructure(Marshal.ReadIntPtr(IntPtr.Add(ptr, i * IntPtrSize)), typeof(T));
                     }
